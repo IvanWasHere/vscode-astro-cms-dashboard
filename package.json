@@ -1,0 +1,152 @@
+{
+  "name": "astro-dashboard",
+  "displayName": "Astro Dashboard",
+  "description": "A WordPress-style dashboard for managing Astro sites: content collections, entries, media and pages — right inside VS Code.",
+  "version": "0.1.0",
+  "publisher": "ivanwashere",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "astro",
+    "cms",
+    "dashboard",
+    "content collections",
+    "media"
+  ],
+  "icon": "media/icon.png",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "workspaceContains:**/astro.config.{mjs,js,ts,mts,cjs}"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "astroDashboard.open",
+        "title": "Open Dashboard",
+        "category": "Astro",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "astroDashboard.newEntry",
+        "title": "New Content Entry",
+        "category": "Astro"
+      },
+      {
+        "command": "astroDashboard.newCollection",
+        "title": "New Content Collection (Post Type)",
+        "category": "Astro"
+      },
+      {
+        "command": "astroDashboard.media",
+        "title": "Open Media Library",
+        "category": "Astro"
+      },
+      {
+        "command": "astroDashboard.config",
+        "title": "Open Site Config",
+        "category": "Astro"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "astroDashboard.open",
+          "when": "astroDashboard.isAstroProject",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Astro Dashboard",
+      "properties": {
+        "astroDashboard.openOnStartup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Open the dashboard automatically when an Astro project is opened."
+        },
+        "astroDashboard.mediaFolders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "src/assets",
+            "public"
+          ],
+          "description": "Folders (relative to the Astro project root) shown in the media library."
+        },
+        "astroDashboard.defaultUploadFolder": {
+          "type": "string",
+          "default": "src/assets",
+          "description": "Folder where uploaded media is stored by default."
+        },
+        "astroDashboard.devServerUrl": {
+          "type": "string",
+          "default": "http://localhost:4321",
+          "description": "URL of the Astro dev server, used for 'View' links."
+        },
+        "astroDashboard.configFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra config/data files (relative to the Astro project root) to show under Config, in addition to the ones found automatically in src/."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "astroDashboard",
+          "title": "Astro Dashboard",
+          "icon": "media/activity-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "astroDashboard": [
+        {
+          "id": "astroDashboard.sidebar",
+          "name": "Dashboard"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "astroDashboard.sidebar",
+        "when": "astroDashboard.isAstroProject",
+        "contents": "[$(dashboard) Open Dashboard](command:astroDashboard.open)\n[$(new-file) New Entry](command:astroDashboard.newEntry)\n[$(file-media) Media Library](command:astroDashboard.media)\n[$(settings-gear) Site Config](command:astroDashboard.config)"
+      },
+      {
+        "view": "astroDashboard.sidebar",
+        "when": "!astroDashboard.isAstroProject",
+        "contents": "No astro.config file found in this workspace."
+      }
+    ]
+  },
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node18 --external:vscode --outfile=dist/extension.js --sourcemap --minify",
+    "watch": "npm run build -- --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build:test && node --test test/*.test.cjs",
+    "build:test": "esbuild src/project.ts src/dataFiles.ts --bundle --platform=node --format=cjs --target=node18 --outdir=dist/test --out-extension:.js=.cjs --log-level=warning",
+    "package": "npm run build && vsce package --no-dependencies --no-rewrite-relative-links",
+    "vscode:prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.25.0"
+  },
+  "dependencies": {
+    "yaml": "^2.6.0",
+    "typescript": "^5.6.0"
+  }
+}
