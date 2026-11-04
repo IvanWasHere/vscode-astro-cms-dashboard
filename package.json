@@ -136,6 +136,8 @@
     "typecheck": "tsc --noEmit",
     "test": "npm run build:test && node --test test/*.test.cjs",
     "build:test": "esbuild src/project.ts src/dataFiles.ts --bundle --platform=node --format=cjs --target=node18 --outdir=dist/test --out-extension:.js=.cjs --log-level=warning",
+    "preview:webview": "node scripts/screenshots/server.cjs",
+    "screenshots": "node scripts/screenshots/capture.cjs",
     "package": "npm run build && vsce package --no-dependencies --no-rewrite-relative-links",
     "vscode:prepublish": "npm run build"
   },

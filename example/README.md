@@ -12,6 +12,8 @@ npm run dev    # http://localhost:4321
 
 Then open this folder in VS Code with the extension installed, or press **F5** in the extension repo, which opens this folder in an Extension Development Host.
 
+For a step-by-step walk-through with screenshots, see the [tutorial in the main README](../README.md#tutorial).
+
 ## What it shows
 
 | Dashboard feature | Where to look in this site |

@@ -11,6 +11,7 @@ Everything is saved as normal files in your project. There's no database, no ser
 ## Contents
 
 - [Getting started](#getting-started)
+- [Tutorial](#tutorial)
 - [Opening the dashboard](#opening-the-dashboard)
 - [Dashboard home](#dashboard-home)
 - [Content collections](#content-collections)
@@ -45,6 +46,143 @@ Or in VS Code: Extensions view → `…` menu → **Install from VSIX…**
 The extension starts on its own when the workspace contains an `astro.config.*` file. If the workspace holds more than one Astro project, it asks which one to use the first time you open the dashboard.
 
 > For the best results, run `astro sync` (or start the dev server) once. The dashboard then reads the exact field types from Astro's generated `.astro/collections/*.schema.json` files.
+
+**New here?** Follow the [tutorial](#tutorial). It walks through every feature using the example site in this repo.
+
+## Tutorial
+
+This walk-through uses the example site in [`example/`](example/), *Harbor View Family Medicine*: a fictional family practice in San Diego with an English site and a Spanish version under `/es/`. It takes about 15 minutes and covers every part of the dashboard. Everything you change is a normal file edit, so you can see each change in `git diff` as you go.
+
+### 1. Set up the example
+
+```sh
+cd example
+npm install
+npm run sync    # lets the dashboard read the exact field types
+```
+
+Open the `example` folder in VS Code with the extension installed. If you're working on the extension itself, press **F5** in the extension repo instead. It opens the example in an Extension Development Host.
+
+### 2. Open the dashboard and start the site
+
+Click the **Astro Dashboard** icon in the activity bar, or **Dashboard** in the status bar. The home screen shows what's in the project: 3 collections (News, Services, Team), 10 media files, 18 pages and 4 config files.
+
+At the bottom of the left menu, click **Start**. This runs `astro dev` in a terminal called *Astro dev*. Once it's up, the menu shows **Dev server running**, and **View site** opens http://localhost:4321 inside VS Code.
+
+![Dashboard home for the example site](images/overview.png)
+
+### 3. Edit a news post
+
+1. In the menu, click **News**. The list shows one column per language: ✓ means the translation exists and **+** means it's missing. *Welcoming a new nurse practitioner* has a **Draft** badge.
+
+   ![News list with language columns](images/collection.png)
+
+2. Click **Flu shots are now available**. On the left is the Markdown body, on the right the publish box, the translations box and the fields from the schema: date, summary, cover image, tags and the *important* checkbox.
+
+   ![Editing a news post](images/entry.png)
+
+3. Change the summary, then click **Update** (or press `⌘S` / `Ctrl+S`). Open `src/content/news/en/2026-10-flu-shots.md`: only the `summary:` line changed.
+4. Click **View on site ↗** to see the post at `/news/2026-10-flu-shots/`.
+
+### 4. Link to another page
+
+In the post body, put the cursor at the end of the last line and press `⌘K` / `Ctrl+K`. The link picker lists every page and post of the site in the selected language, with its URL. Pick **Office hours** and click **Insert link**. The dashboard writes `[Office hours](/hours/)` for you.
+
+![Link picker](images/link-picker.png)
+
+Next to **Link**, **Add media** inserts an image from the media library with the correct relative path.
+
+### 5. Translate a post into Spanish
+
+1. Go back to **News**. *Holiday hours* has a **+** in the **es** column.
+2. Click **+**. The dashboard copies the post to `src/content/news/es/2026-11-holiday-hours.md` and opens it.
+3. Translate the title, summary and body, for example *Horario de días festivos*, and click **Update**.
+4. The Spanish post is now live at `/es/noticias/2026-11-holiday-hours/`. In the editor's **Translations** box, you can jump between the two versions.
+
+### 6. Publish a draft
+
+Open *Welcoming a new nurse practitioner*. The publish box shows **Draft**. Click **Publish**, and the `draft: true` line is removed from the file. The post now appears on `/news/`.
+
+Services has no draft field. Open any service and click **Enable drafts** next to the status. The dashboard adds `draft: z.boolean().default(false)` to the services schema in `src/content.config.ts`. Your pages still decide what to do with drafts. In the example, `getNews()` in `src/lib/news.ts` already skips them.
+
+### 7. Edit a team member
+
+**Team** is a data collection: one YAML file per person and no body text, so the editor only shows fields.
+
+1. Click **Team**, then **Daniel Reyes, MD**.
+2. *Role* is a drop-down (from `z.enum`), *Languages* is a tag list, and *Photo* is an image picker. *Position* is an object with `en` and `es` values, so it's edited as JSON.
+3. Add **Português** to *Languages* and click **Update**. Reload `/providers/` to see it.
+
+![Editing a team member](images/data-entry.png)
+
+To add someone, click **Add new** under Team. Fill in the fields, pick a headshot with **Choose image**, and save. The new file goes to `src/content/team/<name>.yaml`.
+
+### 8. Manage media
+
+Click **Media**. Every file in `src/assets` and `public` is shown as a tile.
+
+![Media library](images/media.png)
+
+- Click a file to see its size, dimensions and **Used in**: the files that reference it. Copy its path, an `import` line or an `<Image>` tag.
+- Tick **Unused only**. `open-house-2019.svg` is an old flyer nobody uses, so you can safely delete it.
+- Drag an image onto the page, or click **Add new media**, to upload it to the folder picked next to the button. For example, upload a headshot to `src/assets/team` and choose it as Maria Lopez's photo.
+
+### 9. Change site settings without touching code
+
+The **Config** section of the menu lists the files the site keeps its settings in.
+
+1. Click **Site** (`src/data/site.ts`). Each export is a tab: *Practice*, *Hero*, *Notice*, *Hours*, *Closures* and *Insurance*.
+
+   ![Editing src/data/site.ts as a form](images/config.png)
+
+2. Open **Notice**, untick **Show** and click **Save**. The notice bar disappears from every page.
+3. Open **Hours**. Each item is one day (`day: 4` is Thursday). Change Thursday's afternoon closing time from `19:00` to `20:00`.
+4. Open **Insurance** and duplicate the last plan to add another one.
+5. Scroll to **Hero**. `image` is an imported image, so it's shown read-only with a thumbnail and an **Edit in file** link.
+
+Run `git diff src/data/site.ts`. Only the values you changed are different, and comments and formatting are untouched.
+
+**Translations** (`src/i18n/translations.ts`) holds the menu labels and interface texts. English and Spanish are shown side by side, so missing or outdated translations are easy to spot.
+
+![Translation pairs side by side](images/translations.png)
+
+**Faq** (`faq.json`) and **Emergency** (`emergency.yaml`) work the same way for JSON and YAML files.
+
+### 10. Add a new content type
+
+Say the practice wants a page of patient forms.
+
+1. Click **New collection**. Name it `downloads`, keep **Translatable** ticked and adjust the fields. The code preview shows what will be added.
+
+   ![New collection wizard](images/new-collection.png)
+
+2. Click **Create collection**. The dashboard adds `defineCollection(...)` to `src/content.config.ts` and creates `src/content/downloads/en/` and `es/`.
+3. Restart the dev server (or run `npm run sync`). **Downloads** now appears in the menu, and you can add entries.
+4. To show them on the site, add a page, for example `src/pages/downloads.astro`:
+
+   ```astro
+   ---
+   import { getCollection } from 'astro:content';
+   import Base from '../layouts/Base.astro';
+   const items = await getCollection('downloads', (d) => d.id.startsWith('en/'));
+   ---
+   <Base lang="en" title="Patient forms">
+     <section class="section"><div class="wrap">
+       <h1>Patient forms</h1>
+       <ul>{items.map((d) => <li>{d.data.title}</li>)}</ul>
+     </div></section>
+   </Base>
+   ```
+
+### 11. Check pages and settings
+
+- **Pages** lists every route in `src/pages` with its URL, language and type. In the example that's 7 pages in each language, 2 dynamic routes for the news posts, a 404 page and the `/api/hours.json` endpoint.
+
+  ![Pages](images/pages.png)
+
+- **Settings** shows what the dashboard read from `astro.config.mjs` (site URL, languages, integrations) and each collection's fields.
+
+When you're done, run `git checkout example/ && git clean -fd example/` to reset the example site.
 
 ## Opening the dashboard
 
@@ -130,9 +268,15 @@ Saving keeps your YAML front matter tidy. The key order and formatting stay the 
 
 **Linking:** press `⌘K` / `Ctrl+K`, or click **Link**, to open the link picker. It lists every page and entry of the site, so you can link to them without typing URLs.
 
+![Link picker](images/link-picker.png)
+
+**Data collections** (JSON or YAML files, no body text) open with just the fields:
+
+![Editing a data entry](images/data-entry.png)
+
 ## Translations
 
-If your Astro config sets `i18n.locales`, collections with one subfolder per language (`src/content/news/de/…`, `src/content/news/en/…`) are recognised as translatable. The dashboard then:
+If your Astro config sets `i18n.locales`, collections with one subfolder per language (`src/content/news/en/…`, `src/content/news/es/…`) are recognised as translatable. The dashboard then:
 
 - shows a column per language in the entry list
 - lets you pick the language in the publish box and in Quick draft
@@ -184,16 +328,18 @@ Search and filter by type or language. **Edit** opens the `.astro` file, **View*
 
 ![Config editor](images/config.png)
 
-Many Astro sites keep content in TypeScript or JSON files, such as the site name, opening hours, team members, navigation labels or translations. The dashboard finds these files on its own (for example `src/data/site.ts`, `src/i18n/index.ts` or `src/data/*.json`) and lists them under **Config** in the menu. Each one opens as a form, the way a WordPress theme's Customizer does:
+Many Astro sites keep content in TypeScript or JSON files, such as the site name, opening hours, team members, navigation labels or translations. The dashboard finds these files on its own (for example `src/data/site.ts`, `src/i18n/translations.ts` or `src/data/*.json`) and lists them under **Config** in the menu. Each one opens as a form, the way a WordPress theme's Customizer does:
 
 - Every exported value becomes a section. The tabs at the top jump between them.
 - **Text, numbers and yes/no** values become inputs.
-- **Translation pairs** such as `{ de: '…', en: '…' }` are shown side by side.
+- **Translation pairs** such as `{ en: '…', es: '…' }` are shown side by side.
 - **Lists** can be added to, duplicated, reordered and removed. New items are copies of the last one.
 - **Filter fields** finds a field by name or value.
 - Values that are code, such as `import.meta.env.SITE`, function calls or imported images, are shown read-only with an **Edit in file** link to the exact line. Imported images still show a thumbnail.
 
 Saving only rewrites the values you changed. Comments, formatting and everything else in the file stay the same. Use `⌘S` / `Ctrl+S` or the **Save** button, and **Revert** to throw away unsaved changes.
+
+![Translation pairs](images/translations.png)
 
 To list files the dashboard doesn't find, add them to the `astroDashboard.configFiles` setting.
 
@@ -277,6 +423,8 @@ npm run watch       # rebuild on change
 npm run typecheck   # tsc --noEmit
 npm test            # core logic tests against a temp copy of the example site
 npm run package     # create astro-dashboard-<version>.vsix
+npm run preview:webview   # the dashboard UI in a browser, on the example site
+npm run screenshots       # regenerate the screenshots in images/
 ```
 
 Press **F5** in VS Code with this folder open to launch an Extension Development Host. It opens the example site in [`example/`](example/).
@@ -294,6 +442,12 @@ npm run dev         # http://localhost:4321
 
 The tests copy the example to a temp folder, so running them never changes it.
 
+### Screenshots
+
+The screenshots in `images/` are taken from the example site with `npm run screenshots`. The script runs the real dashboard code (`src/panel.ts`) in Node with a small stand-in for the `vscode` module, shows the webview in headless Chrome with VS Code's Dark Modern colors, and saves each view at 1360×820 @2x. Start the example's dev server first (`cd example && npm run dev`) so the shots show *Dev server running*. To redo only some shots, name them: `npm run screenshots -- media entry`.
+
+`npm run preview:webview` starts the same server on http://localhost:4400/, which is handy for working on the UI in a normal browser. Dialogs that VS Code would show (confirmations, file pickers) are logged to the terminal and answered with *cancel*.
+
 ### Code layout
 
 | File | Purpose |
@@ -305,7 +459,8 @@ The tests copy the example to a temp folder, so running them never changes it.
 | `media/dashboard.js`, `media/dashboard.css` | The dashboard UI: plain JavaScript, styled with the VS Code theme colors |
 | `media/activity-icon.svg` | Activity bar icon |
 | `test/` | Node test runner tests |
-| `example/` | Example Astro site used for the tests, F5 debugging and demos |
+| `example/` | Example Astro site used for the tests, F5 debugging, the tutorial and screenshots |
+| `scripts/screenshots/` | Serves the dashboard webview to a browser and captures the README screenshots |
 
 ## License
 

@@ -18,7 +18,7 @@ before(() => {
 
 test('finds config files and skips content/pages', () => {
   const files = d.findDataFiles(root).map((f) => f.file);
-  assert.deepStrictEqual(files, ['src/data/emergency.yaml', 'src/data/faq.json', 'src/data/site.ts', 'src/i18n/ui.ts']);
+  assert.deepStrictEqual(files, ['src/data/emergency.yaml', 'src/data/faq.json', 'src/data/site.ts', 'src/i18n/translations.ts']);
 });
 
 test('edits only the changed literals, keeping comments and quotes', () => {
@@ -54,9 +54,9 @@ test('list operations: duplicate, move, remove, add', () => {
   assert.deepStrictEqual(froms(), start);
   d.saveDataFile(root, SITE, [], { op: 'remove', path: ['closures', 0] });
   assert.deepStrictEqual(froms(), ['2026-12-24']);
-  d.saveDataFile(root, 'src/i18n/ui.ts', [], { op: 'add', path: ['days', 'en'] });
-  assert.match(read('src/i18n/ui.ts'), /'Saturday', 'Sunday', ''\]/);
-  d.saveDataFile(root, 'src/i18n/ui.ts', [], { op: 'remove', path: ['days', 'en', 8] });
+  d.saveDataFile(root, 'src/i18n/translations.ts', [], { op: 'add', path: ['days', 'en'] });
+  assert.match(read('src/i18n/translations.ts'), /'Saturday', 'Sunday', ''\]/);
+  d.saveDataFile(root, 'src/i18n/translations.ts', [], { op: 'remove', path: ['days', 'en', 8] });
   // inline single-element list → remove leaves []
   d.saveDataFile(root, SITE, [], { op: 'remove', path: ['hours', 5, 'slots', 0] });
   assert.match(read(SITE), /\{ day: 6, slots: \[\] \}/);

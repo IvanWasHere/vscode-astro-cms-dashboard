@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import { render, type CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import { routes, ui, fmtDate, type Lang } from '../i18n/ui';
+import { routes, ui, fmtDate, type Lang } from '../i18n/translations';
 import { getNews, newsUrl, slugOf } from '../lib/news';
 
 interface Props { lang: Lang; post: CollectionEntry<'news'> }
