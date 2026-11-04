@@ -6,3 +6,4 @@ tsconfig.json
 dist/test/**
 dist/*.map
 *.vsix
+example/**

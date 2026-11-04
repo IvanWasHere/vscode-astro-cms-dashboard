@@ -1,0 +1,48 @@
+:root {
+  --navy: #16324f;
+  --navy-dark: #0f2338;
+  --accent: #2f6b7a;
+  --ink: #1b2430;
+  --muted: #5b6672;
+  --bg: #ffffff;
+  --soft: #f4f6f8;
+  --line: #e1e6eb;
+  --radius: 6px;
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 17px;
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--accent); text-underline-offset: 3px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 500; color: var(--navy); line-height: 1.2; margin: 0 0 0.6em; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.1rem, 4vw, 3rem); }
+h2 { font-size: 1.7rem; }
+h3 { font-size: 1.25rem; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
+.section { padding: 4rem 0; }
+.section.soft { background: var(--soft); }
+.narrow { max-width: 760px; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.75rem; }
+.lead { font-size: 1.15rem; color: var(--muted); max-width: 60ch; }
+.grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.75rem; }
+.btn {
+  display: inline-block; padding: 0.75rem 1.35rem; border-radius: var(--radius); font-weight: 600; font-size: 0.95rem;
+  text-decoration: none; background: var(--navy); color: #fff; border: 1px solid var(--navy);
+}
+.btn:hover { background: var(--navy-dark); }
+.btn.outline { background: transparent; color: var(--navy); }
+.btn.outline:hover { background: var(--soft); }
+.tag { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-right: 0.75rem; }
+.tag.important { color: #9b2c2c; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+td, th { text-align: left; padding: 0.7rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 500; width: 40%; }
+.prose p, .prose li { max-width: 68ch; }

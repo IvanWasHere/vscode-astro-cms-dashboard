@@ -271,16 +271,28 @@ The dashboard also watches `src/`, `public/`, `astro.config.*` and the generated
 ## Development
 
 ```sh
-cd vscode-astro-dashboard
 npm install
 npm run build       # bundle to dist/extension.js
 npm run watch       # rebuild on change
 npm run typecheck   # tsc --noEmit
-npm test            # core logic tests against a temp copy of the parent Astro site
+npm test            # core logic tests against a temp copy of the example site
 npm run package     # create astro-dashboard-<version>.vsix
 ```
 
-Press **F5** in VS Code with this folder open to launch an Extension Development Host.
+Press **F5** in VS Code with this folder open to launch an Extension Development Host. It opens the example site in [`example/`](example/).
+
+### Example site
+
+[`example/`](example/) is a small, fictional family medicine practice in San Diego (*Harbor View Family Medicine*) in English and Spanish. It is built to show every part of the dashboard: translated and untranslated collections, a data-only collection, drafts, images, unused media, dynamic pages, an endpoint, and config files in TypeScript, JSON and YAML. See [example/README.md](example/README.md) for a tour.
+
+```sh
+cd example
+npm install
+npm run sync        # generate Astro's schemas so the dashboard reads exact field types
+npm run dev         # http://localhost:4321
+```
+
+The tests copy the example to a temp folder, so running them never changes it.
 
 ### Code layout
 
@@ -293,6 +305,7 @@ Press **F5** in VS Code with this folder open to launch an Extension Development
 | `media/dashboard.js`, `media/dashboard.css` | The dashboard UI: plain JavaScript, styled with the VS Code theme colors |
 | `media/activity-icon.svg` | Activity bar icon |
 | `test/` | Node test runner tests |
+| `example/` | Example Astro site used for the tests, F5 debugging and demos |
 
 ## License
 

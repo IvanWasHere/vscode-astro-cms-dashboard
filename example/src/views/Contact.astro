@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import HoursTable from '../components/HoursTable.astro';
+import { practice, insurance } from '../data/site';
+import faq from '../data/faq.json';
+import { routes, ui, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; title: string }
+const { lang, title } = Astro.props;
+const address = `${practice.street}, ${practice.city}, ${practice.state} ${practice.zip}`;
+const tel = `tel:+1${practice.phone.replace(/\D/g, '')}`;
+---
+
+<Base lang={lang} title={title} alt={routes.contact}>
+  <section class="section">
+    <div class="wrap">
+      <h1>{title}</h1>
+      <div class="grid info">
+        <div class="card">
+          <h3>{ui.location[lang]}</h3>
+          <p>{practice.name}<br />{practice.street}<br />{practice.city}, {practice.state} {practice.zip}</p>
+          <a href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(address)}`}>{ui.directions[lang]} ↗</a>
+        </div>
+        <div class="card">
+          <h3>{ui.call[lang]}</h3>
+          <p>T <a href={tel}>{practice.phone}</a><br />F {practice.fax}<br /><a href={`mailto:${practice.email}`}>{practice.email}</a></p>
+          <a href="/downloads/new-patient-form.pdf">{ui.download[lang]}</a>
+        </div>
+        <div class="card">
+          <h3>{ui.insurance[lang]}</h3>
+          <ul class="plain">{insurance.map((i) => <li>{i}</li>)}</ul>
+          <p class="muted small">{ui.insuranceNote[lang]}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section soft">
+    <div class="wrap two">
+      <div>
+        <h2>{ui.officeHours[lang]}</h2>
+        <HoursTable lang={lang} />
+      </div>
+      <div>
+        <h2>{faq.title[lang]}</h2>
+        {faq.items.map((i) => (
+          <details>
+            <summary>{i.question[lang]}</summary>
+            <p class="muted">{i.answer[lang]}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .info { margin-top: 2rem; }
+  .plain { list-style: none; padding: 0; margin: 0 0 1rem; }
+  .small { font-size: 0.88rem; }
+  .two { display: grid; gap: 3rem; grid-template-columns: 1fr 1fr; }
+  details { border-bottom: 1px solid var(--line); padding: 1rem 0; }
+  summary { cursor: pointer; font-weight: 500; color: var(--navy); }
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+</style>

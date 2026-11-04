@@ -1,0 +1,41 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { routes, fmtDate, type Lang } from '../i18n/ui';
+import { getNews, newsUrl } from '../lib/news';
+
+interface Props { lang: Lang; title: string }
+const { lang, title } = Astro.props;
+const posts = await getNews(lang);
+---
+
+<Base lang={lang} title={title} alt={routes.news}>
+  <section class="section">
+    <div class="wrap">
+      <h1>{title}</h1>
+      <div class="grid posts">
+        {posts.map((p) => (
+          <article>
+            {p.data.cover && <Image src={p.data.cover} alt="" width={600} class="cover" />}
+            <p class="meta">
+              <time class="muted">{fmtDate(lang, p.data.date)}</time>
+              {p.data.important && <span class="tag important">●</span>}
+            </p>
+            <h3><a href={newsUrl(lang, p)}>{p.data.title}</a></h3>
+            <p class="muted">{p.data.summary}</p>
+            {p.data.tags.map((t) => <span class="tag">{t}</span>)}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .posts { margin-top: 2rem; }
+  .cover { border-radius: var(--radius); margin-bottom: 1rem; border: 1px solid var(--line); }
+  .meta { margin: 0 0 0.4rem; font-size: 0.9rem; }
+  .tag.important { margin-left: 0.5rem; }
+  h3 a { color: var(--navy); text-decoration: none; }
+  h3 a:hover { color: var(--accent); }
+</style>

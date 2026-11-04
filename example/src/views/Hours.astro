@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import HoursTable from '../components/HoursTable.astro';
+import { closures } from '../data/site';
+import { routes, ui, fmtDate, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; title: string }
+const { lang, title } = Astro.props;
+---
+
+<Base lang={lang} title={title} alt={routes.hours}>
+  <section class="section">
+    <div class="wrap narrow">
+      <h1>{title}</h1>
+      <HoursTable lang={lang} />
+      {closures.length > 0 && (
+        <>
+          <h2 class="closures">{ui.closures[lang]}</h2>
+          {closures.map((c) => (
+            <div class="closure">
+              <strong>{c.reason[lang]}</strong>
+              <div>{fmtDate(lang, c.from)}{c.to !== c.from && <> – {fmtDate(lang, c.to)}</>}</div>
+              <div class="muted">{ui.coverage[lang]}: {c.coverage}</div>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .closures { margin-top: 3rem; }
+  .closure { padding: 1rem 0; border-bottom: 1px solid var(--line); }
+</style>

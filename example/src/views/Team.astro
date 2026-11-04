@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { routes, ui, type Lang } from '../i18n/ui';
+import { getTeam } from '../lib/team';
+
+interface Props { lang: Lang; title: string }
+const { lang, title } = Astro.props;
+const team = await getTeam();
+---
+
+<Base lang={lang} title={title} alt={routes.team}>
+  <section class="section">
+    <div class="wrap">
+      <h1>{title}</h1>
+      <div class="grid people">
+        {team.map(({ data }) => (
+          <article>
+            {data.photo
+              ? <Image src={data.photo} alt={data.name} width={480} height={600} class="photo" />
+              : <div class="photo placeholder" />}
+            <h3>{data.name}</h3>
+            <p class="muted">{data.position[lang]}</p>
+            {data.languages.length > 0 && <p class="langs">{ui.speaks[lang]}: {data.languages.join(', ')}</p>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .people { margin-top: 2.5rem; }
+  .photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); margin-bottom: 1.1rem; }
+  .placeholder { background: var(--soft); border: 1px solid var(--line); }
+  h3 { margin-bottom: 0.2em; }
+  p { margin: 0 0 0.3em; }
+  .langs { font-size: 0.9rem; }
+</style>

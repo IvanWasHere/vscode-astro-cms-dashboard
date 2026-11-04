@@ -1,0 +1,19 @@
+{
+  "name": "harbor-view-family-medicine-example",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Example Astro site for the Astro Dashboard VS Code extension: a small, fictional family medicine practice in San Diego.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "sync": "astro sync",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.4.5",
+    "yaml": "^2.6.0"
+  }
+}

@@ -1,0 +1,10 @@
+name: Daniel Reyes, MD
+role: physician
+position:
+  en: Family medicine physician, medical director
+  es: Médico de medicina familiar, director médico
+photo: ../../assets/team/daniel-reyes.svg
+languages:
+  - English
+  - Español
+order: 2

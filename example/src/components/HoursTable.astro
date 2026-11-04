@@ -1,0 +1,25 @@
+---
+import { hours } from '../data/site';
+import { days, ui, fmtTime, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+
+<table>
+  <tbody>
+    {[1, 2, 3, 4, 5, 6, 7].map((d) => {
+      const slots = hours.find((h) => h.day === d)?.slots ?? [];
+      return (
+        <tr>
+          <th>{days[lang][d]}</th>
+          <td>
+            {slots.length
+              ? slots.map((s) => <div>{fmtTime(lang, s.from)} – {fmtTime(lang, s.to)}</div>)
+              : <span class="muted">{ui.closed[lang]}</span>}
+          </td>
+        </tr>
+      );
+    })}
+  </tbody>
+</table>

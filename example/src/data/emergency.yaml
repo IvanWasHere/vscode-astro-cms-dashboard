@@ -1,0 +1,9 @@
+# Emergency numbers shown in the footer and on the contact page.
+title: In an emergency / En caso de emergencia
+numbers:
+  - label: Emergency / Emergencias
+    number: '911'
+  - label: Suicide & Crisis Lifeline / Línea de crisis
+    number: '988'
+  - label: Poison Control / Control de envenenamientos
+    number: 1-800-222-1222

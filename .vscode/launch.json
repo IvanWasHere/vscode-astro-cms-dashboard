@@ -2,10 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Astro Dashboard (on the parent Astro site)",
+      "name": "Run Astro Dashboard (on the example site)",
       "type": "extensionHost",
       "request": "launch",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}", "${workspaceFolder}/.."],
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}", "${workspaceFolder}/example"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "npm: build"
     }

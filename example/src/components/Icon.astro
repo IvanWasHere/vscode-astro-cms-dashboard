@@ -1,0 +1,17 @@
+---
+// Simple line icons for the services collection (`icon` field).
+interface Props { name: 'stethoscope' | 'heart' | 'syringe' | 'lab' | 'video' | 'leaf' }
+const paths: Record<Props['name'], string> = {
+  stethoscope: 'M6 3v6a5 5 0 0 0 10 0V3M11 14v2a5 5 0 0 0 10 0v-3M21 11a2 2 0 1 0 0 .01',
+  heart: 'M12 21s-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-8 11-8 11z',
+  syringe: 'M18 2l4 4M15 5l4 4M5 15l-3 3 4 4 3-3M8 12l4 4M17 7L7 17l-2-2L15 5z',
+  lab: 'M9 3h6M10 3v6L4 20h16L14 9V3M7 15h10',
+  video: 'M3 7h12v10H3zM15 10l6-3v10l-6-3',
+  leaf: 'M5 21c0-10 6-16 16-16 0 10-6 16-16 16zM5 21l8-8',
+};
+const { name } = Astro.props;
+---
+
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d={paths[name]} />
+</svg>

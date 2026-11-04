@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { routes, ui } from '../i18n/ui';
+---
+
+<Base lang="en" title="Page not found">
+  <section class="section">
+    <div class="wrap narrow">
+      <h1>{ui.notFound.en}</h1>
+      <p class="muted" lang="es">{ui.notFound.es}</p>
+      <p><a href={routes.home.en}>{ui.backHome.en}</a> · <a href={routes.home.es} lang="es">{ui.backHome.es}</a></p>
+    </div>
+  </section>
+</Base>

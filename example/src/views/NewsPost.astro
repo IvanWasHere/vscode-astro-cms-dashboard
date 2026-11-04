@@ -1,0 +1,34 @@
+---
+import { Image } from 'astro:assets';
+import { render, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { routes, ui, fmtDate, type Lang } from '../i18n/ui';
+import { getNews, newsUrl, slugOf } from '../lib/news';
+
+interface Props { lang: Lang; post: CollectionEntry<'news'> }
+const { lang, post } = Astro.props;
+const { Content } = await render(post);
+
+// Language switch: same post in the other language if it exists, otherwise that language's news list
+const other: Lang = lang === 'en' ? 'es' : 'en';
+const translation = (await getNews(other)).find((p) => slugOf(p.id) === slugOf(post.id));
+const alt = { [lang]: newsUrl(lang, post), [other]: translation ? newsUrl(other, translation) : routes.news[other] };
+---
+
+<Base lang={lang} title={post.data.title} description={post.data.summary} alt={alt}>
+  <article class="section">
+    <div class="wrap narrow prose">
+      <a href={routes.news[lang]} class="back">← {ui.allNews[lang]}</a>
+      <p class="eyebrow">{fmtDate(lang, post.data.date)}</p>
+      <h1>{post.data.title}</h1>
+      <p class="lead">{post.data.summary}</p>
+      {post.data.cover && <Image src={post.data.cover} alt="" width={760} class="cover" />}
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .back { display: inline-block; margin-bottom: 2rem; font-size: 0.92rem; text-decoration: none; }
+  .cover { border-radius: var(--radius); margin: 2rem 0; border: 1px solid var(--line); }
+</style>

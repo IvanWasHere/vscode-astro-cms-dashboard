@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://harborviewfamilymed.example/sitemap-index.xml

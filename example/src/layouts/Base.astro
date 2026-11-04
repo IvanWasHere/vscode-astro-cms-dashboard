@@ -1,0 +1,103 @@
+---
+import '../styles/global.css';
+import { practice, notice } from '../data/site';
+import { emergency } from '../lib/emergency';
+import { languages, nav, routes, ui, type Lang, type RouteKey } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description?: string;
+  /** Address of this page in each language, for the language switch. */
+  alt?: Partial<Record<Lang, string>>;
+}
+const { lang, title, description = practice.tagline[lang], alt = {} } = Astro.props;
+const other: Lang = lang === 'en' ? 'es' : 'en';
+const otherUrl = alt[other] ?? routes.home[other];
+const tel = `tel:+1${practice.phone.replace(/\D/g, '')}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | {practice.name}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="wrap">
+        <span>{practice.street}, {practice.city}, {practice.state} {practice.zip}</span>
+        <span class="topbar-links">
+          <a href={tel}>{practice.phone}</a>
+          {practice.portalUrl && <a href={practice.portalUrl}>{ui.patientPortal[lang]}</a>}
+          <a href={otherUrl} hreflang={other} lang={other}>{languages[other].label}</a>
+        </span>
+      </div>
+    </div>
+    <header>
+      <div class="wrap">
+        <a class="brand" href={routes.home[lang]}>
+          <img src="/favicon.svg" alt="" width="34" height="34" />
+          <span>{practice.name}</span>
+        </a>
+        <nav>
+          {(Object.keys(nav) as RouteKey[]).map((k) => (
+            <a href={routes[k][lang]} aria-current={Astro.url.pathname.startsWith(routes[k][lang]) ? 'page' : undefined}>
+              {nav[k as keyof typeof nav][lang]}
+            </a>
+          ))}
+          {practice.bookingUrl && <a class="btn" href={practice.bookingUrl}>{ui.bookOnline[lang]}</a>}
+        </nav>
+      </div>
+    </header>
+    {notice.show && <div class="notice"><div class="wrap">{notice.text[lang]}</div></div>}
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <div class="wrap footer-grid">
+        <div>
+          <div class="footer-name">{practice.name}</div>
+          <div>{practice.street}<br />{practice.city}, {practice.state} {practice.zip}</div>
+          <div>T <a href={tel}>{practice.phone}</a> · F {practice.fax}</div>
+          <div><a href={`mailto:${practice.email}`}>{practice.email}</a></div>
+        </div>
+        <div>
+          <div class="footer-head">{emergency.title}</div>
+          {emergency.numbers.map((n) => <div>{n.label}: <strong>{n.number}</strong></div>)}
+        </div>
+        <div>
+          <div class="footer-head">{practice.name}</div>
+          <div><a href={routes.privacy[lang]}>{ui.privacy[lang]}</a></div>
+          <div><a href="/downloads/new-patient-form.pdf">{ui.download[lang]}</a></div>
+        </div>
+      </div>
+      <div class="wrap legal">© {new Date().getFullYear()} {practice.name}. San Diego, California.</div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .topbar { background: var(--navy); color: #c9d4df; font-size: 0.85rem; }
+  .topbar .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  .topbar a { color: #fff; text-decoration: none; }
+  .topbar-links { display: flex; gap: 1.5rem; }
+  header { border-bottom: 1px solid var(--line); background: #fff; }
+  header .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 1.1rem; padding-bottom: 1.1rem; }
+  .brand { display: flex; align-items: center; gap: 0.75rem; font-family: var(--serif); font-size: 1.3rem; color: var(--navy); text-decoration: none; }
+  nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1.6rem; }
+  nav a:not(.btn) { color: var(--ink); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+  nav a:not(.btn):hover, nav a[aria-current] { color: var(--accent); }
+  nav a[aria-current] { box-shadow: inset 0 -2px 0 var(--accent); padding-bottom: 0.2rem; }
+  .notice { background: var(--soft); border-bottom: 1px solid var(--line); font-size: 0.92rem; color: var(--navy); }
+  .notice .wrap { padding-top: 0.65rem; padding-bottom: 0.65rem; }
+  footer { margin-top: 0; padding: 3.5rem 0 1.5rem; background: var(--navy-dark); color: #b8c4d0; font-size: 0.92rem; line-height: 1.8; }
+  footer a { color: #fff; }
+  .footer-grid { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .footer-name { font-family: var(--serif); font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
+  .footer-head { color: #fff; font-weight: 600; margin-bottom: 0.5rem; }
+  .legal { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 0.82rem; }
+</style>

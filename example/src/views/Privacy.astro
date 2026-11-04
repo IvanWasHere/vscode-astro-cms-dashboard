@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import { practice } from '../data/site';
+import { routes, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; title: string }
+const { lang, title } = Astro.props;
+---
+
+<Base lang={lang} title={title} alt={routes.privacy}>
+  <section class="section">
+    <div class="wrap narrow prose">
+      <h1>{title}</h1>
+      <p>
+        {lang === 'en'
+          ? 'This is a fictional example website for the Astro Dashboard VS Code extension. The practice, providers, address and phone numbers are made up. No personal or health information is collected.'
+          : 'Este es un sitio web ficticio de ejemplo para la extensión Astro Dashboard de VS Code. El consultorio, el personal, la dirección y los teléfonos son inventados. No se recopila información personal ni médica.'}
+      </p>
+      <p>{practice.name} · {practice.street}, {practice.city}, {practice.state} {practice.zip}</p>
+    </div>
+  </section>
+</Base>

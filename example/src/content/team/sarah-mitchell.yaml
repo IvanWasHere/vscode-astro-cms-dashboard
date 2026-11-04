@@ -1,0 +1,9 @@
+name: Sarah Mitchell, MD
+role: physician
+position:
+  en: Family medicine physician
+  es: Médica de medicina familiar
+photo: ../../assets/team/sarah-mitchell.svg
+languages:
+  - English
+order: 1

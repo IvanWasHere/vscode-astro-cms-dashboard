@@ -1,0 +1,87 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import HoursTable from '../components/HoursTable.astro';
+import Icon from '../components/Icon.astro';
+import { practice, hero } from '../data/site';
+import { routes, ui, fmtDate, type Lang } from '../i18n/ui';
+import { getNews, newsUrl } from '../lib/news';
+import { getServices } from '../lib/services';
+
+interface Props { lang: Lang; title: string }
+const { lang, title } = Astro.props;
+const news = (await getNews(lang)).slice(0, 3);
+const services = (await getServices(lang)).slice(0, 4);
+const tel = `tel:+1${practice.phone.replace(/\D/g, '')}`;
+---
+
+<Base lang={lang} title={title} alt={routes.home}>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        {practice.acceptingNewPatients && <p class="eyebrow">{ui.newPatients[lang]}</p>}
+        <h1>{hero.headline[lang]}</h1>
+        <p class="lead">{hero.text[lang]}</p>
+        <p class="actions">
+          {practice.bookingUrl && <a class="btn" href={practice.bookingUrl}>{ui.bookOnline[lang]}</a>}
+          <a class="btn outline" href={tel}>{ui.call[lang]} {practice.phone}</a>
+        </p>
+        <p class="muted providers">{practice.providers}</p>
+      </div>
+      <Image src={hero.image} alt="" loading="eager" class="hero-img" />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">{ui.ourServices[lang]}</p>
+      <h2>{ui.servicesIntro[lang]}</h2>
+      <div class="grid services">
+        {services.map(({ data }) => (
+          <div>
+            <span class="icon"><Icon name={data.icon} /></span>
+            <h3>{data.title}</h3>
+            <p class="muted">{data.summary}</p>
+          </div>
+        ))}
+      </div>
+      <a href={routes.services[lang]}>{ui.ourServices[lang]} →</a>
+    </div>
+  </section>
+
+  <section class="section soft">
+    <div class="wrap two">
+      <div>
+        <p class="eyebrow">{ui.latestNews[lang]}</p>
+        {news.map((p) => (
+          <article class="news-item">
+            <time class="muted">{fmtDate(lang, p.data.date)}</time>
+            <h3><a href={newsUrl(lang, p)}>{p.data.title}</a></h3>
+            <p class="muted">{p.data.summary}</p>
+          </article>
+        ))}
+        <a href={routes.news[lang]}>{ui.allNews[lang]} →</a>
+      </div>
+      <div class="card">
+        <h3>{ui.officeHours[lang]}</h3>
+        <HoursTable lang={lang} />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding: 4.5rem 0; border-bottom: 1px solid var(--line); }
+  .hero-grid { display: grid; gap: 3rem; grid-template-columns: 1.15fr 1fr; align-items: center; }
+  .hero-img { border-radius: var(--radius); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 2rem 0 1.5rem; }
+  .providers { font-size: 0.9rem; }
+  .services { margin: 2.5rem 0 2rem; grid-template-columns: repeat(4, 1fr); }
+  .icon { color: var(--accent); display: block; margin-bottom: 0.75rem; }
+  .two { display: grid; gap: 3rem; grid-template-columns: 1.3fr 1fr; align-items: start; }
+  .news-item { padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
+  .news-item:last-of-type { margin-bottom: 1.25rem; }
+  .news-item h3 a { color: var(--navy); text-decoration: none; }
+  .news-item h3 a:hover { color: var(--accent); }
+  @media (max-width: 860px) { .hero-grid, .two { grid-template-columns: 1fr; } .services { grid-template-columns: 1fr 1fr; } }
+</style>

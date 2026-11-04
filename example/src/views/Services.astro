@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { render } from 'astro:content';
+import { routes, ui, type Lang } from '../i18n/ui';
+import { getServices } from '../lib/services';
+
+interface Props { lang: Lang; title: string }
+const { lang, title } = Astro.props;
+const services = await Promise.all(
+  (await getServices(lang)).map(async (s) => ({ ...s, Content: (await render(s)).Content })),
+);
+---
+
+<Base lang={lang} title={title} alt={routes.services}>
+  <section class="section">
+    <div class="wrap">
+      <h1>{title}</h1>
+      <p class="lead">{ui.servicesIntro[lang]}</p>
+      <div class="grid list">
+        {services.map(({ data, Content }) => (
+          <article class="card">
+            <span class="icon"><Icon name={data.icon} /></span>
+            <h3>{data.title}</h3>
+            <p>{data.summary}</p>
+            <div class="muted"><Content /></div>
+            {data.coverage === 'self-pay' && <span class="tag">{ui.selfPay[lang]}</span>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .list { margin-top: 2.5rem; }
+  .icon { color: var(--accent); display: block; margin-bottom: 0.75rem; }
+</style>

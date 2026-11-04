@@ -1,4 +1,4 @@
-// Config/data file editing, against a temporary copy of the parent site.
+// Config/data file editing, against a temporary copy of the example site.
 const { test, before } = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const d = require('../dist/test/dataFiles.cjs');
 
-const site = path.resolve(__dirname, '../..');
+const site = path.resolve(__dirname, '../example');
 let root;
 const read = (f) => fs.readFileSync(path.join(root, f), 'utf8');
 const SITE = 'src/data/site.ts';
@@ -18,54 +18,53 @@ before(() => {
 
 test('finds config files and skips content/pages', () => {
   const files = d.findDataFiles(root).map((f) => f.file);
-  assert.deepStrictEqual(files, ['src/data/site.ts', 'src/i18n/index.ts']);
+  assert.deepStrictEqual(files, ['src/data/emergency.yaml', 'src/data/faq.json', 'src/data/site.ts', 'src/i18n/ui.ts']);
 });
 
 test('edits only the changed literals, keeping comments and quotes', () => {
   const before = read(SITE);
   d.saveDataFile(root, SITE, [
-    { path: ['site', 'email'], value: "praxis@o'example.de" },
+    { path: ['practice', 'email'], value: "office@o'example.com" },
     { path: ['hours', 0, 'slots', 1, 'to'], value: '17:30' },
-    { path: ['hours', 2, 'slots', 0, 'who'], value: 'Dr. Horst' },
-    { path: ['team', 0, 'role', 'en'], value: 'Line one\nline two' },
+    { path: ['hours', 5, 'slots', 0, 'to'], value: '13:00' },
+    { path: ['hero', 'headline', 'es'], value: 'Line one\nline two' },
   ]);
   const after = read(SITE);
-  assert.match(after, /email: 'praxis@o\\'example\.de',/);
-  assert.match(after, /\{ from: '13:00', to: '17:30', who: null \}/);
-  assert.match(after, /\{ day: 3, slots: \[\{ from: '07:30', to: '12:00', who: 'Dr\. Horst' \}\] \}/);
-  assert.match(after, /en: `Line one\nline two`,/);
-  assert.match(after, /\/\/ KIM-Adresse für elektronische Arztbriefe/);
+  assert.match(after, /email: 'office@o\\'example\.com',/);
+  assert.match(after, /\{ day: 1, slots: \[\{ from: '08:00', to: '12:00' \}, \{ from: '13:00', to: '17:30' \}\] \}/);
+  assert.match(after, /\{ day: 6, slots: \[\{ from: '09:00', to: '13:00' \}\] \}/);
+  assert.match(after, /es: `Line one\nline two`,/);
+  assert.match(after, /\/\/ Online booking link\. Leave empty to hide/);
   // nothing else changed
   const kept = new Set(after.split('\n'));
   const removed = before.split('\n').filter((l) => !kept.has(l));
   assert.ok(removed.length >= 3 && removed.length <= 5, removed.join('\n')); // only the edited lines
   const f = d.readDataFile(root, SITE);
-  assert.strictEqual(f.data.find((x) => x.name === 'site').node.entries.find((e) => e.key === 'email').node.value, "praxis@o'example.de");
+  assert.strictEqual(f.data.find((x) => x.name === 'practice').node.entries.find((e) => e.key === 'email').node.value, "office@o'example.com");
 });
 
 test('list operations: duplicate, move, remove, add', () => {
-  const names = () => d.readDataFile(root, SITE).data.find((x) => x.name === 'team').node.items.map((i) => i.entries[0].node.value);
-  const start = names();
-  const n = start.length;
-  d.saveDataFile(root, SITE, [], { op: 'duplicate', path: ['team', n - 1] });
-  assert.deepStrictEqual(names(), [...start, start[n - 1]]);
-  d.saveDataFile(root, SITE, [{ path: ['team', n, 'name'], value: 'Neu' }], { op: 'up', path: ['team', n] });
-  assert.deepStrictEqual(names(), [...start.slice(0, n - 1), 'Neu', start[n - 1]]);
-  d.saveDataFile(root, SITE, [], { op: 'remove', path: ['team', n - 1] });
-  assert.deepStrictEqual(names(), start);
-  d.saveDataFile(root, SITE, [], { op: 'remove', path: ['team', 0] });
-  assert.deepStrictEqual(names(), start.slice(1));
-  d.saveDataFile(root, SITE, [], { op: 'add', path: ['navKeys'] });
-  assert.match(read(SITE), /navKeys: RouteKey\[\] = \['practice', 'team', 'services', 'hours', 'news', 'contact', ''\];/);
-  d.saveDataFile(root, SITE, [], { op: 'remove', path: ['navKeys', 6] });
+  const froms = () => d.readDataFile(root, SITE).data.find((x) => x.name === 'closures').node.items.map((i) => i.entries[0].node.value);
+  const start = froms();
+  assert.deepStrictEqual(start, ['2026-11-26', '2026-12-24']);
+  d.saveDataFile(root, SITE, [], { op: 'duplicate', path: ['closures', 1] });
+  d.saveDataFile(root, SITE, [{ path: ['closures', 2, 'from'], value: 'New' }], { op: 'up', path: ['closures', 2] });
+  assert.deepStrictEqual(froms(), ['2026-11-26', 'New', '2026-12-24']);
+  d.saveDataFile(root, SITE, [], { op: 'remove', path: ['closures', 1] });
+  assert.deepStrictEqual(froms(), start);
+  d.saveDataFile(root, SITE, [], { op: 'remove', path: ['closures', 0] });
+  assert.deepStrictEqual(froms(), ['2026-12-24']);
+  d.saveDataFile(root, 'src/i18n/ui.ts', [], { op: 'add', path: ['days', 'en'] });
+  assert.match(read('src/i18n/ui.ts'), /'Saturday', 'Sunday', ''\]/);
+  d.saveDataFile(root, 'src/i18n/ui.ts', [], { op: 'remove', path: ['days', 'en', 8] });
   // inline single-element list → remove leaves []
-  d.saveDataFile(root, SITE, [], { op: 'remove', path: ['hours', 2, 'slots', 0] });
-  assert.match(read(SITE), /\{ day: 3, slots: \[\] \}/);
-  assert.throws(() => d.saveDataFile(root, SITE, [], { op: 'add', path: ['team', 0, 'cv'] }), /non-empty list/);
+  d.saveDataFile(root, SITE, [], { op: 'remove', path: ['hours', 5, 'slots', 0] });
+  assert.match(read(SITE), /\{ day: 6, slots: \[\] \}/);
+  assert.throws(() => d.saveDataFile(root, SITE, [], { op: 'add', path: ['hours', 5, 'slots'] }), /non-empty list/);
 });
 
 test('refuses to overwrite code and never writes broken files', () => {
-  assert.throws(() => d.saveDataFile(root, SITE, [{ path: ['team', 0, 'photo'], value: 'x' }]), /not found|is code/);
+  assert.throws(() => d.saveDataFile(root, SITE, [{ path: ['hero', 'image'], value: 'x' }]), /not found|is code/);
   assert.throws(() => d.saveDataFile(root, SITE, [{ path: ['nope'], value: 'x' }]), /not found/);
 });
 

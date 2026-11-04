@@ -1,0 +1,26 @@
+{
+  "title": { "en": "Frequently asked questions", "es": "Preguntas frecuentes" },
+  "items": [
+    {
+      "question": { "en": "Are you accepting new patients?", "es": "¿Aceptan pacientes nuevos?" },
+      "answer": {
+        "en": "Yes. Please complete the new patient form before your first visit and bring a photo ID and your insurance card.",
+        "es": "Sí. Llene el formulario para pacientes nuevos antes de su primera visita y traiga una identificación con foto y su tarjeta del seguro."
+      }
+    },
+    {
+      "question": { "en": "Can I get a same-day appointment?", "es": "¿Puedo conseguir una cita el mismo día?" },
+      "answer": {
+        "en": "We keep time open every day for urgent concerns. Call us in the morning and we'll find a time for you.",
+        "es": "Reservamos espacios cada día para problemas urgentes. Llámenos por la mañana y le daremos un horario."
+      }
+    },
+    {
+      "question": { "en": "How do I request a prescription refill?", "es": "¿Cómo pido un resurtido de mi receta?" },
+      "answer": {
+        "en": "Send a request through the patient portal or ask your pharmacy to contact us. Please allow two business days.",
+        "es": "Envíe una solicitud por el portal del paciente o pida a su farmacia que se comunique con nosotros. Permita dos días hábiles."
+      }
+    }
+  ]
+}
