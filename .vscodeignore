@@ -9,3 +9,4 @@ dist/*.map
 example/**
 scripts/**
 dist/screenshots/**
+bin/**
